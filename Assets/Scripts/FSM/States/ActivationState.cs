@@ -13,7 +13,7 @@ public class ActivationState : FBState
 
     public override void Execute()
     {
-
+        botController.ChangeState(botController.assessingState);
     }
 
     public override void Exit()

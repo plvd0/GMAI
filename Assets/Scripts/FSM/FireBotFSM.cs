@@ -13,6 +13,7 @@ public class FireBotFSM : MonoBehaviour
     public FBState currentState;
     public IdleState idleState;
     public ActivationState activationState;
+    public AssessingState assessingState;
 
     void Start()
     {
