@@ -5,35 +5,43 @@ using UnityEngine;
 
 public class Bot : MonoBehaviour
 {
-    public float helpInterval = 5f;
-    private float timer;
-    private SphereCollider helpRadius;
+    public float helpRange = 25f;
+    public float callInterval = 3f;
 
     void Start()
     {
-        helpRadius = GetComponent<SphereCollider>();
-        helpRadius.enabled = false;
+        StartCallForHelp();
     }
 
-    void Update()
+    public void StartCallForHelp()
     {
-        timer += Time.deltaTime;
-        if(timer >= helpInterval)
+        InvokeRepeating("CallForHelp", 0, callInterval);
+    }
+
+    public void StopCallForHelp()
+    {
+        CancelInvoke("CallForHelp");
+    }
+
+    public void CallForHelp()
+    {
+        Debug.Log("CALLING FOR HELP");
+        foreach(Collider collider in Physics.OverlapSphere(transform.position, helpRange))
         {
-            timer = 0;
-            CallForHelp();
+            if (collider.CompareTag("FireBot"))
+            {
+                FireBotFSM fireBot = collider.GetComponent<FireBotFSM>();
+                if (fireBot != null)
+                {
+                    fireBot.HearHelp(transform.position);
+                }
+            }
         }
     }
 
-    private void CallForHelp()
+    public Vector3 GetCurrentPos()
     {
-        helpRadius.enabled = true;
-        Debug.Log("Bot is calling for help!");
-        Invoke("DisableCallForHelp", 2f);
-    }
-
-    void DisableCallForHelp()
-    {
-        helpRadius.enabled = false;
+        Debug.Log("Bot position: " + transform.position);
+        return transform.position;
     }
 }

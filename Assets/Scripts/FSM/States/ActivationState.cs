@@ -24,7 +24,6 @@ public class ActivationState : FBState
         }
         else
         {
-            Debug.Log("Transitioning to Assessing state");
             botController.ChangeState(botController.assessingState);
         }
     }

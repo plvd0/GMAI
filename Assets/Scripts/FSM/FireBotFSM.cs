@@ -20,6 +20,7 @@ public class FireBotFSM : MonoBehaviour
     public Vector3 toolOffset = new Vector3(-1, 0, 0);
 
     public FireManager fireManager;
+    public Bot bot;
 
     // Declaring the different states here
     public FBState currentState;
@@ -29,6 +30,7 @@ public class FireBotFSM : MonoBehaviour
     public EquipmentState equipmentState;
     public ExtinguishingState extinguishingState;
     public SearchRescueState searchRescueState;
+    public EvacuationSupportState evacuationSupportState;
     public PostFireState postFireState;
 
     void Start()
@@ -38,7 +40,8 @@ public class FireBotFSM : MonoBehaviour
         assessingState = new AssessingState(this, fireManager);
         equipmentState = new EquipmentState(this);
         extinguishingState = new ExtinguishingState(this, fireManager);
-        searchRescueState = new SearchRescueState(this);
+        searchRescueState = new SearchRescueState(this, bot);
+        evacuationSupportState = new EvacuationSupportState(this);
         postFireState = new PostFireState(this);
 
         ChangeState(idleState);
@@ -59,5 +62,13 @@ public class FireBotFSM : MonoBehaviour
     public void SetDisplay(string text)
     {
         displayText.text = text;
+    }
+
+    public void HearHelp(Vector3 position)
+    {
+        if(currentState is ExtinguishingState)
+        {
+            ChangeState(searchRescueState);
+        }
     }
 }

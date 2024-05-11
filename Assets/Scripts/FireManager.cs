@@ -69,6 +69,6 @@ public class FireManager : MonoBehaviour
     private void SpawnBot(GameObject location)
     {
         Instantiate(botPrefab, location.transform.position, Quaternion.identity);
-        Debug.Log("Bot spawned in Bedroom");
+        Debug.Log("Bot spawned in");
     }
 }

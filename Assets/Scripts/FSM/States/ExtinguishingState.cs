@@ -9,15 +9,15 @@ public class ExtinguishingState : FBState
 
     private float extinguishingTime = 10.0f;
     private float timer;
-    private Vector3 firePosition;
 
     public ExtinguishingState(FireBotFSM botController, FireManager fireManager) : base(botController)
     {
-        this.firePosition = fireManager.firePosition;
+        this.fireManager = fireManager;
     }
 
     public override void Enter()
     {
+        Debug.Log("ExtinguishingState initialized with fire position: " + fireManager.firePosition);
         botController.SetDisplay("EXTINGUISHING: Fire-Bot is now fighting the fire.");
         timer = extinguishingTime;
 
@@ -28,9 +28,10 @@ public class ExtinguishingState : FBState
     {
         if (AtFirePos())
         {
-            if(timer > 0)
+            if (timer > 0)
             {
                 timer -= Time.deltaTime;
+                botController.SetDisplay($"EXTINGUISHING: {timer} before Fire-Bot extinguishes it.");
             }
             else
             {
@@ -54,7 +55,9 @@ public class ExtinguishingState : FBState
         NavMeshAgent agent = botController.GetComponent<NavMeshAgent>();
         if(agent != null)
         {
-            agent.destination = firePosition;
+            Vector3 targetPos = fireManager.firePosition;
+            agent.destination = targetPos;
+            agent.stoppingDistance = 5.0f;
         }
     }
 
@@ -63,7 +66,10 @@ public class ExtinguishingState : FBState
         NavMeshAgent agent = botController.GetComponent<NavMeshAgent>();
         if (agent != null && !agent.pathPending)
         {
-            if (!agent.pathPending && (agent.remainingDistance <= agent.stoppingDistance && agent.velocity.sqrMagnitude < 0.1f))
+            Vector3 targetPos = fireManager.firePosition;
+            float distance = Vector3.Distance(agent.transform.position, targetPos);
+
+            if (distance <= agent.stoppingDistance && agent.velocity.sqrMagnitude < 0.1f)
             {
                 return true;
             }
