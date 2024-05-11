@@ -10,8 +10,14 @@ public class FireBotFSM : MonoBehaviour
     public GameObject livingRoom;
 
     public GameObject fireBot;
-    public GameObject fireTruck;
+    public GameObject fireHosePrefab;
+    public GameObject fireExtinguisherPrefab;
     public GameObject sceneDestination;
+
+    [HideInInspector] 
+    public string agentTool;
+    [HideInInspector]
+    public Vector3 toolOffset = new Vector3(-1, 0, 0);
 
     public FireManager fireManager;
 
@@ -21,6 +27,9 @@ public class FireBotFSM : MonoBehaviour
     public ActivationState activationState;
     public AssessingState assessingState;
     public EquipmentState equipmentState;
+    public ExtinguishingState extinguishingState;
+    public SearchRescueState searchRescueState;
+    public PostFireState postFireState;
 
     void Start()
     {
@@ -28,6 +37,9 @@ public class FireBotFSM : MonoBehaviour
         activationState = new ActivationState(this);
         assessingState = new AssessingState(this, fireManager);
         equipmentState = new EquipmentState(this);
+        extinguishingState = new ExtinguishingState(this, fireManager);
+        searchRescueState = new SearchRescueState(this);
+        postFireState = new PostFireState(this);
 
         ChangeState(idleState);
     }

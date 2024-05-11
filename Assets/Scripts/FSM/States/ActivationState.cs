@@ -1,39 +1,30 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class ActivationState : FBState
 {
-    private float speed = 5.0f;
-    private Vector3 fireTruckOffset = new Vector3(3, 0, 0);
-
-    public ActivationState(FireBotFSM botController) : base(botController) 
-    {
-        this.botController = botController;
-    }
+    public ActivationState(FireBotFSM botController) : base(botController) {}
 
     public override void Enter()
     {
         botController.SetDisplay("ACTIVATION: Fire-Bot has detected fire, enroute to scene.");
+        NavMeshAgent agent = botController.fireBot.GetComponent<NavMeshAgent>();
+        MoveToScene(botController.fireBot, botController.sceneDestination.transform.position);
     }
 
     public override void Execute()
     {
         Vector3 fireBotTargetPos = botController.sceneDestination.transform.position;
-        Vector3 fireTruckTargetPos = botController.sceneDestination.transform.position + fireTruckOffset;
 
-        if(!AtScene(botController.fireBot, fireBotTargetPos))
+        if (!AtScene(botController.fireBot, fireBotTargetPos))
         {
             MoveToScene(botController.fireBot, fireBotTargetPos);
         }
-
-        if(!AtScene(botController.fireTruck, fireTruckTargetPos))
+        else
         {
-            MoveToScene(botController.fireTruck, fireTruckTargetPos);
-        }
-
-        if(AtScene(botController.fireBot, fireBotTargetPos) && AtScene(botController.fireTruck, fireTruckTargetPos))
-        {
+            Debug.Log("Transitioning to Assessing state");
             botController.ChangeState(botController.assessingState);
         }
     }
@@ -45,11 +36,24 @@ public class ActivationState : FBState
 
     private void MoveToScene(GameObject fireObj, Vector3 targetPos)
     {
-        fireObj.transform.position = Vector3.MoveTowards(fireObj.transform.position, targetPos, speed * Time.deltaTime);
+        NavMeshAgent agent = fireObj.GetComponent<NavMeshAgent>();
+        if (agent != null) 
+        {
+            agent.destination = targetPos;
+        }
     }
 
     private bool AtScene(GameObject fireObj, Vector3 targetPos)
     {
-        return Vector3.Distance(fireObj.transform.position, targetPos) < 0.1f;
+        NavMeshAgent agent = fireObj.GetComponent<NavMeshAgent>();
+        if (agent == null) return false;
+
+        float distanceToTarget = Vector3.Distance(agent.transform.position, targetPos);
+
+        if (!agent.pathPending && agent.remainingDistance <= 0.1f && agent.velocity.sqrMagnitude < 0.01f)
+        {
+            return true;
+        }
+        return false;
     }
 }

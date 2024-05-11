@@ -11,6 +11,7 @@ public class FireManager : MonoBehaviour
 
     public FireBotFSM botController;
     public bool fireActivated {  get; private set; } = false;
+    public Vector3 firePosition {  get; private set; }
 
     public string fireType;
     public string fireSource;
@@ -24,7 +25,7 @@ public class FireManager : MonoBehaviour
     public void GenerateFire()
     {
         Debug.Log("Attempting to start fire");
-        if(Random.value < 0.5)
+        if (Random.value < 0.5)
         {
             bool isKitchen = Random.value < 0.5f;
             GameObject fireLocation = isKitchen ? kitchenRoomLocation : livingRoomLocation;
@@ -38,7 +39,7 @@ public class FireManager : MonoBehaviour
             Debug.Log($"Fire started in {(isKitchen ? "Kitchen" : "Living Room")} - Type: {fireType}, Size: {fireSize}");
             CancelInvoke("GenerateFire");
 
-            if(Random.value < 0.8f)
+            if (Random.value < 0.6f)
             {
                 SpawnBot(bedRoomLocation);
             }
@@ -46,6 +47,11 @@ public class FireManager : MonoBehaviour
             CreateFire(fireLocation.transform.position, fireType, fireSize);
             fireActivated = true;
         }
+    }
+
+    public GameObject GetFireSource() 
+    {
+        return fireSource == "Kitchen" ? kitchenRoomLocation : livingRoomLocation;
     }
 
     private void CreateFire(Vector3 position, string type, float size)
@@ -56,6 +62,8 @@ public class FireManager : MonoBehaviour
 
         Color fireColor = type == "Electrical" ? Color.blue : Color.red;
         fire.GetComponent<Renderer>().material.color = fireColor;
+
+        firePosition = position;
     }
 
     private void SpawnBot(GameObject location)
