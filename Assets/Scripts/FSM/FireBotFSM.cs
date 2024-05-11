@@ -9,16 +9,26 @@ public class FireBotFSM : MonoBehaviour
     public GameObject kitchen;
     public GameObject livingRoom;
 
+    public GameObject fireBot;
+    public GameObject fireTruck;
+    public GameObject sceneDestination;
+
+    public FireManager fireManager;
+
     // Declaring the different states here
     public FBState currentState;
     public IdleState idleState;
     public ActivationState activationState;
     public AssessingState assessingState;
+    public EquipmentState equipmentState;
 
     void Start()
     {
-        idleState = new IdleState(this);
+        idleState = new IdleState(this, fireManager);
         activationState = new ActivationState(this);
+        assessingState = new AssessingState(this, fireManager);
+        equipmentState = new EquipmentState(this);
+
         ChangeState(idleState);
     }
 

@@ -10,6 +10,11 @@ public class FireManager : MonoBehaviour
     public GameObject botPrefab;
 
     public FireBotFSM botController;
+    public bool fireActivated {  get; private set; } = false;
+
+    public string fireType;
+    public string fireSource;
+    public float fireSize;
 
     void Start()
     {
@@ -19,18 +24,16 @@ public class FireManager : MonoBehaviour
     public void GenerateFire()
     {
         Debug.Log("Attempting to start fire");
-        if(Random.value < 0.1)
+        if(Random.value < 0.5)
         {
             bool isKitchen = Random.value < 0.5f;
             GameObject fireLocation = isKitchen ? kitchenRoomLocation : livingRoomLocation;
+            fireSource = isKitchen ? "Kitchen" : "Living Room";
 
             bool isElectrical = isKitchen ? Random.value < 0.7f : Random.value < 0.3f;
-            string fireType = isElectrical ? "Electrical" : "Combustible";
+            fireType = isElectrical ? "Electrical" : "Combustible";
 
-            float fireSize = Random.Range(1.0f, 5.0f);
-
-            Fire fireComponent = fireLocation.GetComponent<Fire>();
-            fireComponent.InitializeFire(fireType, fireSize);
+            fireSize = Random.Range(1.0f, 5.0f);
 
             Debug.Log($"Fire started in {(isKitchen ? "Kitchen" : "Living Room")} - Type: {fireType}, Size: {fireSize}");
             CancelInvoke("GenerateFire");
@@ -39,10 +42,23 @@ public class FireManager : MonoBehaviour
             {
                 SpawnBot(bedRoomLocation);
             }
+
+            CreateFire(fireLocation.transform.position, fireType, fireSize);
+            fireActivated = true;
         }
     }
 
-    void SpawnBot(GameObject location)
+    private void CreateFire(Vector3 position, string type, float size)
+    {
+        GameObject fire = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        fire.transform.position = position;
+        fire.transform.localScale = new Vector3(size, size, size);
+
+        Color fireColor = type == "Electrical" ? Color.blue : Color.red;
+        fire.GetComponent<Renderer>().material.color = fireColor;
+    }
+
+    private void SpawnBot(GameObject location)
     {
         Instantiate(botPrefab, location.transform.position, Quaternion.identity);
         Debug.Log("Bot spawned in Bedroom");
