@@ -19,7 +19,7 @@ public class AssessingState : FBState
 
     public override void Enter()
     {
-        botController.SetDisplay("ASSESSING: Gathering data...");
+        botController.UpdateDisplayWithDelay("ASSESSING: Gathering data...", 0.1f);
         timer = 8.0f;
         initialDisplayComplete = false;
     }

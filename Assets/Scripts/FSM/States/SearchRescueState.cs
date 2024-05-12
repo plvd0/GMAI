@@ -6,36 +6,35 @@ using UnityEngine.AI;
 public class SearchRescueState : FBState
 {
     private NavMeshAgent agent;
-    private Bot bot;
 
-    public SearchRescueState(FireBotFSM botController, Bot bot) : base(botController) 
+    public SearchRescueState(FireBotFSM botController) : base(botController)  
     {
-        this.bot = bot;
         agent = botController.GetComponent<NavMeshAgent>();
     }
 
     public override void Enter()
     {
-        botController.SetDisplay("SEARCH-AND-RESCUE: Fire-Bot is now searching for Bots.");
-        Vector3 botPos = bot.GetCurrentPos();
-        agent.destination = botPos;
-        agent.stoppingDistance = 1.0f;
+        Debug.Log("Entering SEARCH & RESCUE");
+        botController.UpdateDisplayWithDelay("SEARCH-AND-RESCUE: Fire-Bot is now searching for Bots.", 0.1f);
     }
 
     public override void Execute()
     {
-        if (bot == null || agent == null)
+        if (agent.destination != botController.botPos)
         {
-            Debug.LogError("Bot or NavMeshAgent is not initialized.");
-            return;  // Stop execution if bot or agent is null to prevent null reference exception
+            agent.ResetPath();
+            agent.destination = botController.botPos;
+            agent.stoppingDistance = 1.0f;
         }
 
-        Vector3 currentBotPos = bot.GetCurrentPos();
-        agent.destination = currentBotPos;
-
-        if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance && agent.velocity.sqrMagnitude < 0.01f)
+        if (!agent.pathPending)
         {
-            botController.ChangeState(botController.evacuationSupportState);  // Ensure this is supposed to change to itself or another state
+            float adjustedDistance = agent.remainingDistance - agent.stoppingDistance;
+            if (adjustedDistance <= 0 && agent.velocity.sqrMagnitude < 0.1f)
+            {
+                Debug.Log("Bot has reached the help target. Transitioning to Evacuation Support State.");
+                botController.ChangeState(botController.evacuationSupportState);
+            }
         }
     }
 

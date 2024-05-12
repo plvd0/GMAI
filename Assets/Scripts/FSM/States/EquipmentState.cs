@@ -11,7 +11,7 @@ public class EquipmentState : FBState
 
     public override void Enter()
     {
-        botController.SetDisplay("EQUIPMENT: Fire-Bot is gearing up based on fire data.");
+        botController.UpdateDisplayWithDelay("EQUIPMENT: Fire-Bot is gearing up based on data.", 0.1f);
     }
 
     public override void Execute()

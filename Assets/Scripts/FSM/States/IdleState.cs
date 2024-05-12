@@ -13,7 +13,7 @@ public class IdleState : FBState
 
     public override void Enter()
     {
-        botController.SetDisplay("IDLE: Fire-Bot is on-call to respond.");
+        botController.SetDisplay("IDLE: Fire-Bot is on call to respond.");
     }
 
     public override void Execute()

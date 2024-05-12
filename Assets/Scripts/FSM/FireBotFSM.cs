@@ -2,10 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class FireBotFSM : MonoBehaviour
 {
     public TextMeshProUGUI displayText;
+
     public GameObject kitchen;
     public GameObject livingRoom;
 
@@ -14,13 +16,17 @@ public class FireBotFSM : MonoBehaviour
     public GameObject fireExtinguisherPrefab;
     public GameObject sceneDestination;
 
+    public GameObject assemblyArea;
+    public bool inAssemblyArea = false;
+
     [HideInInspector] 
     public string agentTool;
     [HideInInspector]
     public Vector3 toolOffset = new Vector3(-1, 0, 0);
 
+    public Vector3 botPos {  get; set; }
+
     public FireManager fireManager;
-    public Bot bot;
 
     // Declaring the different states here
     public FBState currentState;
@@ -32,6 +38,8 @@ public class FireBotFSM : MonoBehaviour
     public SearchRescueState searchRescueState;
     public EvacuationSupportState evacuationSupportState;
     public PostFireState postFireState;
+    public EducateState educateState;
+    public DepartureState departureState;
 
     void Start()
     {
@@ -40,9 +48,11 @@ public class FireBotFSM : MonoBehaviour
         assessingState = new AssessingState(this, fireManager);
         equipmentState = new EquipmentState(this);
         extinguishingState = new ExtinguishingState(this, fireManager);
-        searchRescueState = new SearchRescueState(this, bot);
-        evacuationSupportState = new EvacuationSupportState(this);
-        postFireState = new PostFireState(this);
+        searchRescueState = new SearchRescueState(this);
+        evacuationSupportState = new EvacuationSupportState(this, assemblyArea);
+        postFireState = new PostFireState(this, assemblyArea);
+        educateState = new EducateState(this);
+        departureState = new DepartureState(this);
 
         ChangeState(idleState);
     }
@@ -64,11 +74,25 @@ public class FireBotFSM : MonoBehaviour
         displayText.text = text;
     }
 
-    public void HearHelp(Vector3 position)
+    public void UpdateDisplayWithDelay(string message, float delay)
     {
-        if(currentState is ExtinguishingState)
+        StartCoroutine(UpdateDisplayCoroutine(message, delay));
+    }
+
+    private IEnumerator UpdateDisplayCoroutine(string message, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        SetDisplay(message);
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (currentState is SearchRescueState)
         {
-            ChangeState(searchRescueState);
+            if (other.CompareTag("Bot"))
+            {
+                ChangeState(evacuationSupportState);
+            }
         }
     }
 }

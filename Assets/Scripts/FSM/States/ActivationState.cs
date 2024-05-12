@@ -9,7 +9,7 @@ public class ActivationState : FBState
 
     public override void Enter()
     {
-        botController.SetDisplay("ACTIVATION: Fire-Bot has detected fire, enroute to scene.");
+        botController.UpdateDisplayWithDelay("ACTIVATION: Fire-Bot is now enroute to the scene.", 0.1f);
         NavMeshAgent agent = botController.fireBot.GetComponent<NavMeshAgent>();
         MoveToScene(botController.fireBot, botController.sceneDestination.transform.position);
     }

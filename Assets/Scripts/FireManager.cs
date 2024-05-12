@@ -8,8 +8,10 @@ public class FireManager : MonoBehaviour
     public GameObject livingRoomLocation;
     public GameObject bedRoomLocation;
     public GameObject botPrefab;
+    public GameObject fire;
 
     public FireBotFSM botController;
+
     public bool fireActivated {  get; private set; } = false;
     public Vector3 firePosition {  get; private set; }
 
@@ -36,7 +38,7 @@ public class FireManager : MonoBehaviour
 
             fireSize = Random.Range(1.0f, 5.0f);
 
-            Debug.Log($"Fire started in {(isKitchen ? "Kitchen" : "Living Room")} - Type: {fireType}, Size: {fireSize}");
+            Debug.Log($"Fire started in {(isKitchen ? "Kitchen" : "Living Room")}, Type: {fireType}, Size: {fireSize}");
             CancelInvoke("GenerateFire");
 
             if (Random.value < 0.6f)
@@ -56,7 +58,7 @@ public class FireManager : MonoBehaviour
 
     private void CreateFire(Vector3 position, string type, float size)
     {
-        GameObject fire = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        fire = GameObject.CreatePrimitive(PrimitiveType.Cube);
         fire.transform.position = position;
         fire.transform.localScale = new Vector3(size, size, size);
 
@@ -69,6 +71,5 @@ public class FireManager : MonoBehaviour
     private void SpawnBot(GameObject location)
     {
         Instantiate(botPrefab, location.transform.position, Quaternion.identity);
-        Debug.Log("Bot spawned in");
     }
 }
