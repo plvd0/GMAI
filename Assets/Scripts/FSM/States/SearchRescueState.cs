@@ -14,32 +14,28 @@ public class SearchRescueState : FBState
 
     public override void Enter()
     {
-        Debug.Log("Entering SEARCH & RESCUE");
-        botController.UpdateDisplayWithDelay("SEARCH-AND-RESCUE: Fire-Bot is now searching for Bots.", 0.1f);
+        botController.UpdateDisplayWithDelay("SEARCH-AND-RESCUE: Fire-Bot is now searching for Bot calling for help.", 0.1f);
     }
 
     public override void Execute()
     {
-        if (agent.destination != botController.botPos)
+        if (agent.destination != botController.botPos) // Checks if destination isn't already set to the Bot
         {
-            agent.ResetPath();
-            agent.destination = botController.botPos;
-            agent.stoppingDistance = 1.0f;
+            agent.ResetPath(); // Resets current path to avoid existing navigation
+            agent.destination = botController.botPos; // Sets new destination to the Bot
+            agent.stoppingDistance = 1.0f; // Sets stopping distance
         }
 
-        if (!agent.pathPending)
+        if (!agent.pathPending) // Checks if Fire-Bot has no pending navigation
         {
-            float adjustedDistance = agent.remainingDistance - agent.stoppingDistance;
-            if (adjustedDistance <= 0 && agent.velocity.sqrMagnitude < 0.1f)
+            float adjustedDistance = agent.remainingDistance - agent.stoppingDistance; // Calculates adjusted distance to target, account for stopping distance
+            if (adjustedDistance <= 0 && agent.velocity.sqrMagnitude < 0.1f) // If adjusted distance is less than or equal to 0 & Fire-Bot has practically stopped moving
             {
-                Debug.Log("Bot has reached the help target. Transitioning to Evacuation Support State.");
-                botController.ChangeState(botController.evacuationSupportState);
+                Debug.Log("Bot reached, evacuation state");
+                botController.ChangeState(botController.evacuationSupportState); // Transitions to Evacuation Support state
             }
         }
     }
 
-    public override void Exit()
-    {
-        Debug.Log("Exited SEARCH & RESCUE state");
-    }
+    public override void Exit() {}
 }

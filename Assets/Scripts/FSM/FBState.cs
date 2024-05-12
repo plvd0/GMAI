@@ -8,10 +8,10 @@ public abstract class FBState
 
     public FBState(FireBotFSM botController)
     {
-        this.botController = botController;
+        this.botController = botController; 
     }
 
-    public virtual void Enter() { }
-    public virtual void Execute() { }
-    public virtual void Exit() { }
+    public virtual void Enter() { } // Used when entering a state to define the behaviour
+    public virtual void Execute() { } // Used during the runtime of the state as defined by FireBotFSM
+    public virtual void Exit() { } // Used when exiting a state to define the behaviour
 }

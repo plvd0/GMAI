@@ -8,24 +8,21 @@ public class IdleState : FBState
 
     public IdleState(FireBotFSM botController, FireManager fireManager) : base(botController) 
     {
-        this.fireManager = fireManager;
+        this.fireManager = fireManager; // References the FireManager as part of its parameter
     }
 
     public override void Enter()
     {
-        botController.SetDisplay("IDLE: Fire-Bot is on call to respond.");
+        botController.SetDisplay("IDLE: Fire-Bot is on call to respond."); // Sets the display text at the top of screen
     }
 
     public override void Execute()
     {
-        if (fireManager.fireActivated) // Checks if fire is active
+        if (fireManager.fireActivated) // Checks if the flag in FireManager is set to True
         {
-            botController.ChangeState(botController.activationState);
+            botController.ChangeState(botController.activationState); // Transitions to Activation state
         }
     }
 
-    public override void Exit() 
-    {
-        Debug.Log("Exited IDLE state");
-    }
+    public override void Exit() {}
 }
